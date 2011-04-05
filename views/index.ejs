@@ -1,0 +1,23 @@
+<h1>Bitcoin Explorer</h1>
+<p>Bitcoin Explorer is a sample application for the Bitcoin Node.js client library <a href="https://github.com/justmoon/node-bitcoin-p2p">node-bitcoin-p2p</a>. It is modeled after the popular <a href="http://blockexplorer.com/">Block Explorer</a> website by theymos.</p>
+<h2>Latest Blocks</h2>
+<table>
+  <thead>
+	<tr>
+	  <td>Number</td>
+	  <td>Hash</td>
+	  <td>Time</td>
+	  <td>Size</td>
+	</tr>
+  </thead>
+  <tbody>
+	<% latestBlocks.forEach(function (block) { %>
+		<tr>
+		  <td><a href="block/<%=Util.formatHashFull(block.hash)%>"><%=block.height-1%></a></td>
+		  <td><span class="mono"><a href="block/<%=Util.formatHashFull(block.hash)%>"><%=Util.formatHashAlt(block.hash)%>&hellip;</a></span></td>
+		  <td><%=new Date(block.timestamp*1000).toUTCString()%></td>
+		  <td><%=block.size%></td>
+		</tr>
+	<% }); %>
+  </tbody>
+</table>

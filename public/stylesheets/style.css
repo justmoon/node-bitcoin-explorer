@@ -1,0 +1,50 @@
+body {
+  padding: 50px;
+  font: 15px "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+
+a {
+  color: #00B7FF;
+}
+
+.mono {
+	font-family: 'Anonymous Pro', monospace;
+}
+
+dl.props {
+	border: 3px solid #ccc;
+	padding: 0.5em;
+}
+
+dl.props dt {
+	float: left;
+	clear: left;
+	text-align: right;
+	font-weight: bold;
+	color: #999;
+	width: 9em;
+}
+
+dl.props dd {
+	padding: 0 0 0.5em 0;
+	margin-left: 9.3em;
+}
+
+table {}
+
+table td {
+	border: 0;
+	margin: 0;
+	padding: 0 0.8em 0 0;
+	vertical-align: top;
+}
+
+table thead td {
+	font-weight: bold;
+	white-space: nowrap;
+}
+
+table.txs tbody td {
+	border-top: 1px solid #ccc;
+	padding: 0.5em 0;
+}

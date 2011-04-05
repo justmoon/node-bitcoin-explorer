@@ -1,0 +1,65 @@
+<h1>Address <%=address%></h1>
+<dl class="props">
+  <dt>First Seen</dt>
+  <dd><a href="../../block/<%=Util.formatHashFull(txs[0].blockObj.hash)%>"><%=txs[0].blockObj.height%></a> (<%=new Date(txs[0].blockObj.timestamp*1000).toUTCString()%>)</dd>
+  <dt>Hash160</dt>
+  <dd><span class="mono"><%=account.pubKeyHash.toHex()%></span></dd>
+  <dt>Received</dt>
+  <dd><%=Util.formatValue(account.receivedAmount)%> BTC (<%=account.receivedCount%> transaction<%=account.receivedCount == 1 ? "" : "s"%>)</dd>
+  <dt>Sent</dt>
+  <dd><%=Util.formatValue(account.sentAmount)%> BTC (<%=account.sentCount%> transaction<%=account.sentCount == 1 ? "" : "s"%>)</dd>
+  <dt>Balance available</dt>
+  <dd><%=Util.formatValue(account.totalAvailable)%> BTC</dd>
+</dl>
+
+<h2>Outputs</h2>
+<table>
+  <thead>
+	<tr>
+	  <td></td>
+	  <td>Transaction</td>
+	  <td>Block</td>
+	  <td>Amount</td>
+	  <td>Type</td>
+	  <td>From/To</td>
+	  <td>Status</td>
+	</tr>
+  </thead>
+  <tbody>
+<% txs.forEach(function (tx) { %>
+	<tr>
+	  <td style="text-align: right"><span class="mono"><%=tx.myOut ? "+" : "-"%></span></td>
+      <td><span class="mono"><a href="../../tx/<%=Util.formatHashFull(new Buffer(tx.hash, 'base64'))%>"><%=Util.formatHashAlt(new Buffer(tx.hash, 'base64'))%>&hellip;</a></span></td>
+	  <td style="white-space: nowrap"><a href="../../block/<%=Util.formatHashFull(tx.blockObj.hash)%>"><%=tx.blockObj.height%></a> (<%=new Date(tx.blockObj.timestamp*1000).toUTCString()%>)</td>
+	  <td><%=Util.formatValue(tx.myOut ? tx.myOut.value : tx.myIn.source.value)%></td>
+	  <% if (tx.myOut) { %>
+		  <td><%=tx.myOut.getScript().getOutType()%></td>
+		  <td>
+			<% tx.ins.forEach(function (txin) { %>
+				<% if (txin.isCoinBase()) { %>
+					Generation
+				<% } else { %>
+					<a href="../../address/<%=Util.pubKeyHashToAddress(Util.sha256ripe160(txin.getScript().simpleInPubKey()))%>"><%=Util.pubKeyHashToAddress(Util.sha256ripe160(txin.getScript().simpleInPubKey()))%></a>
+				<% } %><br>
+			<% }); %>
+		  </td>
+		  <td>
+			<% if (tx.myOut && tx.myOut.spent) { %>
+				Spent in <span class="mono"><a href="../../tx/<%=Util.formatHashFull(new Buffer(tx.myOut.spent.tx.hash, 'base64'))%>"><%=Util.formatHashAlt(new Buffer(tx.myOut.spent.tx.hash, 'base64'))%>&hellip;</a></span>
+			<% } else { %>
+				Available
+			<% } %>
+		  </td>
+		<% } else { %>
+		  <td><%=tx.myIn.getScript().getInType()%></td>
+		  <td>
+			<% tx.outs.forEach(function (txout) { %>
+				<a href="../../address/<%=Util.pubKeyHashToAddress(txout.getScript().simpleOutPubKeyHash())%>"><%=Util.pubKeyHashToAddress(txout.getScript().simpleOutPubKeyHash())%></a><br>
+			<% }); %>
+		  </td>
+		  <td></td>
+		<% } %>
+	</tr>
+<% }); %>
+  </tbody>
+</table>

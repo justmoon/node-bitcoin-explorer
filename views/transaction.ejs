@@ -1,0 +1,70 @@
+<h1>Transaction</h1>
+<dl class="props">
+  <dt>Hash</dt>
+  <dd><span class="mono"><%=Util.formatHashFull(tx.hash)%></span></dd>
+  <dt>Block</dt>
+  <dd><a href="../../block/<%=Util.formatHashFull(block.hash)%>"><%=block.height-1%></a> (<%=new Date(block.timestamp*1000).toUTCString()%>)</dd>
+  <dt>Inputs #</dt>
+  <dd><%=tx.ins.length%></dd>
+  <dt>Total (in)</dt>
+  <dd><%=Util.formatValue(tx.totalIn.add(block.getBlockValue()))%> BTC</dd></dd>
+  <dt>Outputs #</dt>
+  <dd><%=tx.outs.length%></dd>
+  <dt>Total (out)</dt>
+  <dd><%=Util.formatValue(totalOut)%> BTC</dd>
+  <dt>Size</dt>
+  <dd><%=tx.serialize().length%> bytes</dd>
+</dl>
+<h2>Inputs</h2>
+<table>
+  <thead>
+	<tr>
+	  <td>Previous output (index)</td>
+	  <td>Amount</td>
+	  <td>From address</td>
+	  <td>Type</td>
+	  <td>Script</td>
+	</tr>
+  </thead>
+  <tbody>
+	<% tx.ins.forEach(function (txin) { %>
+		<tr>
+		  <% if (txin.isCoinBase()) { %>
+			  <td>N/A</td>
+			  <td><%=Util.formatValue(block.getBlockValue())%> + fees</td>
+			  <td>N/A</td>
+			  <td>Generation</td>
+		  <% } else { %>
+			  <td><a class="mono" href="../../tx/<%=Util.formatHashFull(txin.outpoint.hash)%>"><%=Util.formatHashAlt(txin.outpoint.hash)%>&hellip;</a> (<%=txin.outpoint.index%>)</td>
+			  <td>N/A</td>
+			  <td><a href="../../address/<%=Util.pubKeyHashToAddress(Util.sha256ripe160(txin.getScript().simpleInPubKey()))%>"><%=Util.pubKeyHashToAddress(Util.sha256ripe160(txin.getScript().simpleInPubKey()))%></a></td>
+			  <td><%=txin.getScript().getInType()%></td>
+		  <% } %>
+		  <td><span class="mono"><%=txin.getScript().getStringContent()%></span></td>
+		</tr>
+    <% }); %>
+  </tbody>
+</table>
+<h2>Outputs</h2>
+<table>
+  <thead>
+	<tr>
+	  <td>Index</td>
+	  <td>Amount</td>
+	  <td>To address</td>
+	  <td>Type</td>
+	  <td>Script</td>
+	</tr>
+  </thead>
+  <tbody>
+	<% tx.outs.forEach(function (txout, i) { %>
+		<tr>
+		  <td><%=i%></td>
+	      <td><%=Util.formatValue(txout.value)%></td>
+	      <td><a href="../../address/<%=Util.pubKeyHashToAddress(txout.getScript().simpleOutPubKeyHash())%>"><%=Util.pubKeyHashToAddress(txout.getScript().simpleOutPubKeyHash())%></a></td>
+		  <td><%=txout.getScript().getOutType()%></td>
+	      <td><span class="mono"><%=txout.getScript().getStringContent()%></span></td>
+		</tr>
+    <% }); %>
+  </tbody>
+</table>

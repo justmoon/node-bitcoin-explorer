@@ -1,0 +1,73 @@
+<h1>Block <%=block.height%></h1>
+<dl class="props">
+  <dt>Hash</dt>
+  <dd><span class="mono"><%=Util.formatHashFull(block.hash)%></span></dd>
+  <dt>Previous Block</dt>
+  <dd><span class="mono"><a href="<%=Util.formatHashFull(block.prev_hash)%>"><%=Util.formatHashFull(block.prev_hash)%></a></span></dd>
+<% if (nextBlock) { %>
+	<dt>Next Block</dt>
+	<dd><span class="mono"><a href="<%=Util.formatHashFull(nextBlock.hash)%>"><%=Util.formatHashFull(nextBlock.hash)%></a></span></dd>
+<% } %>
+  <dt>Time</dt>
+  <dd><%=new Date(block.timestamp*1000).toUTCString()%></dd>
+  <dt>Difficulty</dt>
+  <dd><%=Util.calcDifficulty(parseInt(block.bits))%> (Bits: <%=hexDifficulty%>)</dd>
+  <dt>Transactions</dt>
+  <dd><%=block.txs.length%></dd>
+  <dt>Total</dt>
+  <dd><%=Util.formatValue(block.totalOut)%> BTC</dd>
+  <dt>Size</dt>
+  <dd><%=block.size%> bytes</dd>
+  <dt>Merkle root</dt>
+  <dd><span class="mono"><%=Util.formatHashFull(block.merkle_root)%></span></dd>
+  <dt>Nonce</dt>
+  <dd><%=block.nonce%></dd>
+
+<h2>Transactions</h2>
+<table class="txs">
+  <thead>
+	<tr>
+	  <td>Transaction</td>
+	  <td>Fee</td>
+	  <td>Size</td>
+	  <td>From</td>
+	  <td colspan="2">To</td>
+	</tr>
+  </thead>
+  <tbody>
+<% block.txs.forEach(function (tx) { %>
+	<tr>
+	  <td><span class="mono"><a href="../../tx/<%=Util.formatHashFull(tx.getHash())%>"><%=Util.formatHashAlt(tx.getHash())%></a></span></td>
+	  <td><%=tx.fee ? Util.formatValue(tx.fee) : ""%></td>
+	  <td><%=tx.serialize().length%></td>
+	  <td style="white-space: nowrap;">
+		<% tx.ins.forEach(function (txin) { %>
+			<% if (txin.isCoinBase()) { %>
+				Generation: 50 + <%=Util.formatValue(block.totalFee)%> total fees
+			<% } else { %>
+				<%=Util.formatValue(txin.source.value)%>
+				<%
+				  var addr = Util.pubKeyHashToAddress(Util.sha256ripe160(txin.getScript().simpleInPubKey()));
+			      if (addr.length) { %>
+			    <a href="../../address/<%=addr%>"><%=addr%></a>
+		       <% } %>
+           <% } %>
+		   <br>
+		<% }); %>
+	  </td>
+	  <td style="white-space: nowrap;">
+		<% tx.outs.forEach(function (txout) { %>
+			<%=Util.formatValue(txout.value)%>
+			<%
+			  var addr = Util.pubKeyHashToAddress(txout.getScript().simpleOutPubKeyHash());
+			if (addr.length) { %>
+			    <a href="../../address/<%=addr%>"><%=addr%></a>
+		    <% } %>
+			<br>
+		<% }); %>
+	  </td>
+	</tr>
+<% }); %>
+  </tbody>
+</table>
+</dl>
