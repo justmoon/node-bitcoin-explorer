@@ -7,7 +7,7 @@ Explorer](http://blockexplorer.com/) website.
 
 # Installation
 
-    npm install node-bitcoin-p2p
+    npm install bitcoin-p2p
     npm install express
     git clone git://github.com/justmoon/node-bitcoin-explorer.git
 
