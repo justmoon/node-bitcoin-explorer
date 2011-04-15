@@ -89,7 +89,7 @@ app.param('blockHash', function (req, res, next, hash){
 		chain.getBlockByPrev(hash, function (err, nextBlock) {
 			if (err) return next(err);
 
-			storage.Transaction.find({block: block._id}, function (err, txs) {
+			storage.Transaction.find({block: block.hash}, function (err, txs) {
 				if (err) return next(err);
 
 				getOutpoints(txs, function (err) {
@@ -123,7 +123,7 @@ app.param('txHash', function (req, res, next, hash){
 		if (err) return next(err);
 		req.tx = tx;
 
-		storage.Block.findOne({_id: tx.block}, function (err, block) {
+		storage.Block.findOne({hash: tx.block}, function (err, block) {
 			if (err) return next(err);
 			req.block = block;
 
@@ -157,7 +157,7 @@ app.param('addrBase58', function (req, res, next, addr){
 				if (blockIds.indexOf(tx.block) == -1) blockIds.push(tx.block);
 			});
 
-			storage.Block.find({_id: {$in: blockIds}}, function (err, blocks) {
+			storage.Block.find({hash: {$in: blockIds}}, function (err, blocks) {
 				if (err) return next(err);
 
 				getOutpoints(txs, function (err) {
@@ -165,11 +165,11 @@ app.param('addrBase58', function (req, res, next, addr){
 
 					var blkObj = {};
 					blocks.forEach(function (block) {
-						blkObj[block._id.toString()] = block;
+						blkObj[block.hash.toString('base64')] = block;
 					});
 					var txsObj = {};
 					txs.forEach(function (tx) {
-						tx.blockObj = blkObj[tx.block.toString()];
+						tx.blockObj = blkObj[tx.block.toString('base64')];
 						txsObj[tx.hash.toString('base64')] = tx;
 					});
 					req.txsObj = txsObj;
